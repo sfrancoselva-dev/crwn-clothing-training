@@ -1,35 +1,34 @@
 
-import {ProductsContext} from '../../context/products';
+import { useSelector } from "react-redux";
+import { productsSelector, selectLoading } from "../../store/products/products.selector";
 import { useParams } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
 import ProductCard from '../../components/product-card/product-card';
 
 import {ProductListContainer, Preview} from './product-list.styles';
+import { Spinner } from "../../components/spinner/spinner";
 
 const ProductList = () => {
 
     const {productParam} = useParams();
-
-    const {products} = useContext(ProductsContext);
-
-    const [productState, setProductState] = useState(products[productParam]);
-
-    useEffect(() => {
-        setProductState(products[productParam]);
-    },[productParam, products]);
-
-        
+    const products = useSelector(productsSelector);   
+    const category = products[productParam];
+    const loading = useSelector(selectLoading);
 
     return (
         <ProductListContainer>
             <h2>{productParam}</h2>
-            <Preview>
             {
-                productState && productState.map(productItem => {
-                    return <ProductCard product={productItem} key={productItem.id}/>
-                })
+                loading ? <Spinner /> : (
+                    <Preview>
+                    {
+                        category && category.map(productItem => {
+                            return <ProductCard product={productItem} key={productItem.id}/>
+                        })
+                    }
+                    </Preview>
+                )
             }
-            </Preview>
+            
         </ProductListContainer>
     )
 };

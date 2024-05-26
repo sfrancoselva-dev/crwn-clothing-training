@@ -1,8 +1,5 @@
-import { Fragment, useContext } from "react";
+import { Fragment } from "react";
 import { Outlet } from "react-router-dom";
-
-import { UserContext } from "../../context/user";
-
 import { signOutUser } from "../../utils/firebase";
 
 import {ReactComponent as CrwnLogo} from '../../assets/crown.svg';
@@ -15,10 +12,12 @@ import CartDropdown from "../../components/cart-dropdown/cart-dropdown";
 
 import { NavBar, LogoContainer, NavLinksContainer, NavLink } from "./navigation.styles";
 
+import { currentUserState } from "../../store/user/user.selector";
+import { useSelector } from "react-redux";
 
 const Navigation = () => {
 
-   const {currentUser} = useContext(UserContext);
+   const currentUser = useSelector(currentUserState);
 
     return <Fragment>
       <NavBar>

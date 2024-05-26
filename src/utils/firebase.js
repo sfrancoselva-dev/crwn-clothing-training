@@ -66,7 +66,22 @@ export const signInWithEmailAndPasswordCustom = (email,password) => {
 export const signOutUser = async () => await signOut(auth);
 
 
-export const authStateChangedInterface = (callback) => onAuthStateChanged(auth, callback)
+// export const authStateChangedInterface = (callback) => onAuthStateChanged(auth, callback)
+
+export const setUsers = () => {
+
+  return new Promise((resolve, reject) => {
+      const unsubscribe = onAuthStateChanged(auth,
+        (userAuth) => {
+          unsubscribe();
+          resolve(userAuth);
+        },
+        (error) => {
+          reject(error);
+        }
+      )
+  })
+}
 
 
 export const addCollectionAndDocuments = async (collectionKey, objects) => {
@@ -91,12 +106,7 @@ export const getCategoriesAndDocuments = async () => {
 
   const q = query(collectionRef);
 
-  const docSnapShot = await getDocs(q);
+  const querySnapShot = await getDocs(q);
 
-  const queryMap = docSnapShot.docs.reduce((acc, doc) => {
-    const {title, items} = doc.data();
-    acc[title.toLowerCase()] = items;
-    return acc;
-  }, {})
-  return queryMap;
+  return querySnapShot.docs.map(doc => doc.data());
 }

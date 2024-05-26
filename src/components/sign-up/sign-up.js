@@ -5,6 +5,9 @@ import Button, {BTN_TYPES} from "../button/button";
 
 
 import {SignUpContainer} from './sign-up.styles';
+import { signUpStart } from "../../store/user/user.action";
+import { useDispatch, useSelector } from "react-redux";
+
 
 const defaultFieldValues = {
     displayName: '',
@@ -16,6 +19,7 @@ const defaultFieldValues = {
 
 const SignUp = () => {
    const [fieldValues, setFieldValues] = useState(defaultFieldValues);
+   const dispatch = useDispatch();
   
    const {displayName, email, password, confirmPassword} = {...fieldValues};
 
@@ -28,30 +32,14 @@ const SignUp = () => {
     setFieldValues(defaultFieldValues);
    }
 
-   const handleSubmit = async (event) => {
-
+   const handleSubmit = (event) => {
      event.preventDefault();
-
-     if(password !== confirmPassword) {
-        console.error('Password doesn\'t match.');
-        return;
-     }
-
-     try {
-        const {user} = await createUserWithEmailAndPasswordFromAuth(email,password);
-        if(user) {
-            user.displayName = displayName;
-            console.log('from signup component');
-            await createFbDocFromAuth(user);
-            resetFormFields();
-        }
-     } catch(err) {
-        console.error('Something went wrong', err);
-     }
+    dispatch(signUpStart(email,password,confirmPassword,displayName));
+    resetFormFields();
    }
 
    return (
-    <SignUpContainer>
+     <SignUpContainer>
         <h2>I do not have an account</h2>
         <span>Sign up with Email and Password</span>
 
@@ -95,7 +83,8 @@ const SignUp = () => {
             <Button type="submit">Sign Up</Button>
         </form>
     </SignUpContainer>
-   )
+   
+)
 }
 
 

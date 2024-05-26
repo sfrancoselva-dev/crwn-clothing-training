@@ -1,12 +1,29 @@
 
-import { useContext } from 'react';
-import { CartContext } from '../../context/cart';
-
+import { removeProductFromCart, incrementProductQty, decrementProductQty } from '../../store/cart/cart.action';
+import { cartListSelector } from '../../store/cart/cart.selectors';
 import {CheckoutItemContainer, ImageContainer, Image, RemoveButton, ProductName, ProductQuantity, TotalPrice, Arrow, QuantityValue} from './checkout-item.styles';
+import { useDispatch, useSelector } from 'react-redux';
+
 
 const CheckoutItem = ({product}) => {
+    const dispatch = useDispatch();
+    const cartList = useSelector(cartListSelector);
+
     const {imageUrl, name, quantity, price, id, totalPrice} = product;
-    const {removeProductFromCart, incrementProductQty, decrementProductQty} = useContext(CartContext);
+
+    const decrementQty = () => {
+        dispatch(decrementProductQty(product, cartList));
+    }
+
+    const incrementQty = () => {
+        dispatch(incrementProductQty(product, cartList));
+    }
+
+    const removeProductInCart = () => {
+        dispatch(removeProductFromCart(id, cartList))
+    }
+
+
     return (
         <CheckoutItemContainer>
             <ImageContainer>
@@ -15,13 +32,13 @@ const CheckoutItem = ({product}) => {
 
             <ProductName>{name}</ProductName>
             <ProductQuantity>
-                <Arrow onClick={() => decrementProductQty(product)}>&#10094;</Arrow>
+                <Arrow onClick={decrementQty}>&#10094;</Arrow>
                 <QuantityValue>{quantity}</QuantityValue>
-                <Arrow onClick={() => incrementProductQty(product)}>&#10095;</Arrow>
+                <Arrow onClick={incrementQty}>&#10095;</Arrow>
             </ProductQuantity>
             <TotalPrice>{totalPrice}</TotalPrice>
 
-            <RemoveButton onClick={() => removeProductFromCart(id)}>&#10005;</RemoveButton>
+            <RemoveButton onClick={removeProductInCart}>&#10005;</RemoveButton>
         </CheckoutItemContainer>
     )
 };
