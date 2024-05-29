@@ -16,11 +16,11 @@ const getButton = (btnType = BTN_TYPES.base) => {
 }
 
 
-const Button = ({children, btnType, ...otherProps}) => {
+const Button = ({children, btnType, loading, ...otherProps}) => {
 
   const CustomBtn = getButton(btnType);
  
-   return <CustomBtn {...otherProps}>{children}</CustomBtn>
+   return <CustomBtn {...otherProps} className={loading? 'spinner' : null}>{children}</CustomBtn>
 }
 
 export default Button;

@@ -1,13 +1,19 @@
+import { useState } from "react";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
-import Button from "../button/button";
 import {BTN_TYPES} from '../button/button';
-import { PaymentFormContainer, FormContainer } from "./payment-form.styles";
+import { PaymentFormContainer, FormContainer, PayNowButton } from "./payment-form.styles";
 
-
+import { useSelector } from "react-redux";
+import {overallTotalPriceSelector} from '../../store/cart/cart.selectors';
+import {currentUserState} from '../../store/user/user.selector';
 
 const PaymentForm = () => {
     const stripe = useStripe(),
-          elements = useElements()
+          elements = useElements();
+    
+    const amount = useSelector(overallTotalPriceSelector);
+    const currentUser = useSelector(currentUserState);
+    const [isLoading, setIsLoading]= useState(false);
 
     const onSubmitForm = async (e) => {
 
@@ -16,28 +22,30 @@ const PaymentForm = () => {
         if(!stripe || !elements)
             return;
 
+        setIsLoading(true); 
+
         const response = await fetch('/.netlify/functions/create-payment-intent', {
             method: 'post',
             headers: {
                 'Content-Type': 'application/json' 
             },
-            body: JSON.stringify({amount:10000})
+            body: JSON.stringify({amount:  amount * 100})
         }).then(res => res.json())
 
         if(response) {
 
             const clientSecret = response.paymentIntent.client_secret;
-
-        const paymentResult = await stripe.confirmCardPayment(clientSecret, {
+            const paymentResult = await stripe.confirmCardPayment(clientSecret, {
             payment_method: {
               card: elements.getElement(CardElement),
               billing_details: {
-                name: 'Yihua Zhang',
+                name: currentUser ? currentUser.displayName : 'Guest',
               },
             },
           });
-    
-      
+
+          setIsLoading(false);
+
           if (paymentResult.error) {
             alert(paymentResult.error.message);
           } else {
@@ -53,7 +61,7 @@ const PaymentForm = () => {
             <FormContainer onSubmit={onSubmitForm}>
                 <h2>Credit Card Payment:</h2>
                 <CardElement />
-                <Button btnType={BTN_TYPES.inverted}>Pay now</Button>
+                <PayNowButton btnType={BTN_TYPES.inverted} loading={isLoading}>Pay now</PayNowButton>
             </FormContainer>
         </PaymentFormContainer>
     )

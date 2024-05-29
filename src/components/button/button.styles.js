@@ -1,6 +1,5 @@
 import styled from "styled-components";
 
-
 export const BaseBtn = styled.button`
   min-width: 165px;
   width: auto;
@@ -18,12 +17,47 @@ export const BaseBtn = styled.button`
   display: flex;
   justify-content: center;
   font-family: 'Open Sans', sans-serif;
+  position: relative;
 
   &:hover {
     background-color: white;
     color: black;
     border: 1px solid black;
   }
+
+  &.spinner {
+
+    pointer-events: none;
+
+    &:after {
+      content: '';
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      border: 3px solid rgba(195, 195, 195, 0.6);
+      border-radius: 50%;
+      border-top-color: #636767;
+      position: absolute;
+      top: calc(50% - 15px);
+      left: calc(50% - 15px);
+      animation: spin 1s ease-in-out infinite;
+      -webkit-animation: spin 1s ease-in-out infinite;
+  
+      @keyframes spin {
+        to {
+          -webkit-transform: rotate(360deg);
+        }
+      }
+      @-webkit-keyframes spin {
+        to {
+          -webkit-transform: rotate(360deg);
+        }
+      }
+    }
+
+  }
+
+
 `;
 
 
@@ -50,4 +84,6 @@ export const InvertedBtn = styled(BaseBtn)`
       border: none;
     }
 `;
+
+
 
